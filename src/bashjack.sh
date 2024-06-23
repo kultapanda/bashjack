@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-echo "start of project"
+
+# TODO: Add the rules of blackjack as steps to complete to scope out project reqs
