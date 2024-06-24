@@ -8,6 +8,8 @@ load ../src/build_table.sh
 
 @test "empty param supplies 52 cards" {
     # Setup expected output
+    # Expected output will need to be calculations since assoc. arrays in bash aren't
+    # ordered.
     EXPECTED_OUTPUT="1 2 3 4 5 6 7 8 9"
     # Call the build_decks function
     run build_decks
