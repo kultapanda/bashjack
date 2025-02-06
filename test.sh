@@ -63,15 +63,15 @@ params=(
 test_hit_function() {
 	if [[ -v params["player_hand"] ]]; then
 		echo "player_hand is set"
-		local -n player_hand=${params["player_hand"]}
-		echo "values are: ${params["player_hand"][@]}"
+		local -n hit_func_player_hand=${params["player_hand"]}
+		echo "values are: ${hit_func_player_hand[@]}"
 	else
 		echo "player_hand is not set"
 	fi
 	if [[ -v params["deck"] ]]; then
 		echo "deck is set"
-		local -n deck=${params["deck"]}
-		echo "values are: ${deck[@]}"
+		local -n hit_func_deck=${params["deck"]}
+		echo "values are: ${hit_func_deck[@]}"
 	else
 		echo "deck is not set"
 	fi

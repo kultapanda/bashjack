@@ -27,19 +27,19 @@ build_decks() {
 
 randomize_array_with_shuf() {
     # Take array by reference
-    local -n arr=$1
+    local -n shuffled_array=$1
     
     # Create a temporary array with shuffled values
-    local -a shuffled=($(printf "%s\n" "${arr[@]}" | shuf))
+    local -a shuffled=($(printf "%s\n" "${shuffled_array[@]}" | shuf))
     
     # Clear and reload the original array
-    arr=("${shuffled[@]}")
+    shuffled_array=("${shuffled[@]}")
 }
 
 deal_card() {
-    local -n arr=$1
-    local card="${arr[0]}"
-    arr=("${arr[@]:1}")
+    local -n deal_card_array=$1
+    local card="${deal_card_array[0]}"
+    deal_card_array=("${deal_card_array[@]:1}")
     echo "$card"
 }
 
