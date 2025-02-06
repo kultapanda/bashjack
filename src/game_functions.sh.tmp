@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+# Game play functions for bashjack
+
+deal_initial_cards() {
+    local -i i
+    
+    # Deal first card to each player
+    for (( i=0; i<num_players; i++ )); do
+        add_card_to_hand $i "$(deal_card deck)"
+    done
+    
+    # Deal first card to dealer
+    add_card_to_hand "dealer" "$(deal_card deck)"
+    
+    # Deal second card to each player
+    for (( i=0; i<num_players; i++ )); do
+        add_card_to_hand $i "$(deal_card deck)"
+    done
+    
+    # Deal second card to dealer
+    add_card_to_hand "dealer" "$(deal_card deck)"
+}
+
+player_turn() {
+    local -i player_id=$1
+    local choice
+    
+    while is_player_active $player_id; do
+        echo "Player $((player_id + 1))'s turn"
+        echo "Your hand: $(get_player_hand $player_id)"
+        echo "Hand value: $(calculate_hand_value $(get_player_hand $player_id))"
+        
+        read -p "Would you like to (h)it or (s)tand? " choice
+        case "$choice" in
+            h|H)
+                add_card_to_hand $player_id "$(deal_card deck)"
+                local -i hand_value=$(calculate_hand_value $(get_player_hand $player_id))
+                if (( hand_value > 21 )); then
+                    echo "Bust! Hand value: $hand_value"
+                    set_player_state $player_id $STATE_BUST
+                fi
+                ;;
+            s|S)
+                set_player_state $player_id $STATE_STAND
+                ;;
+            *)
+                echo "Invalid choice. Please enter 'h' for hit or 's' for stand."
+                ;;
+        esac
+    done
+}
+
+dealer_turn() {
+    echo "Dealer's turn"
+    echo "Dealer's hand: $(get_player_hand dealer)"
+    
+    while is_player_active "dealer"; do
+        local -i hand_value=$(calculate_hand_value $(get_player_hand dealer))
+        
+        if (( hand_value < 17 )); then
+            add_card_to_hand "dealer" "$(deal_card deck)"
+            echo "Dealer hits: $(get_player_hand dealer)"
+            hand_value=$(calculate_hand_value $(get_player_hand dealer))
+            
+            if (( hand_value > 21 )); then
+                echo "Dealer busts!"
+                set_player_state "dealer" $STATE_BUST
+            fi
+        else
+            echo "Dealer stands with $hand_value"
+            set_player_state "dealer" $STATE_STAND
+        fi
+    done
+}
+
+play_game() {
+    local -i num_players=${1:-1}
+    
+    initialize_game $num_players || return 1
+    
+    # Build and shuffle the deck
+    readarray -t deck < <(build_decks 1)
+    randomize_array_with_shuf deck
+    
+    # Deal initial cards
+    deal_initial_cards
+    
+    # Player turns
+    local -i i
+    for (( i=0; i<num_players; i++ )); do
+        player_turn $i
+    done
+    
+    # Dealer's turn
+    if any_players_active; then
+        dealer_turn
+    fi
+    
+    # Show final results
+    echo -e "\nFinal Results:"
+    echo "Dealer's hand: $(get_player_hand dealer) ($(calculate_hand_value $(get_player_hand dealer)))"
+    
+    for (( i=0; i<num_players; i++ )); do
+        echo "Player $((i + 1))'s hand: $(get_player_hand $i) ($(calculate_hand_value $(get_player_hand $i)))"
+    done
+} 

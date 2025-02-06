@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Source required files
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+source "${SCRIPT_DIR}/game_functions.sh"
+source "${SCRIPT_DIR}/build_table.sh"
+
+# TODO: Add the rules of blackjack as steps to complete to scope out project reqs
+
+# Maximum number of players allowed at the table
+readonly MAX_PLAYERS=5
+
+# Player states
+readonly STATE_PLAYING=0
+readonly STATE_STAND=1
+readonly STATE_BUST=2
+
+# Array to store player hands and states
+declare -A player_hands
+declare -A player_states
+declare -i num_players=0

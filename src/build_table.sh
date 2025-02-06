@@ -67,3 +67,35 @@ calculate_hand_value() {
     
     echo "$total"
 }
+
+
+# Gameplay functions
+# Game start/initialization
+# Number of players
+# Number of decks
+# Chips per player
+# Deal initial cards
+
+# Ante
+# Player turn
+# Hit or stand or split or double down or insurance then check bust or blackjack
+# Dealer turn
+# Hit or stand then check bust or blackjack
+# Compare scores
+# Payout
+# Game end
+
+
+# TODO: add hit() function
+# TODO: add stand() function
+# TODO: add bust() function
+# TODO: add dealer_draw() function
+# TODO: add compare_scores() function
+# TODO: add play_game() function
+# TODO: add player_turn() function
+# TODO: add dealer_turn() function
+# TODO: add check_bust() function
+# TODO: add check_blackjack() function
+# TODO: add check_dealer_turn() function
+# TODO: add check_player_turn() function
+# TODO: add check_game_over() function
