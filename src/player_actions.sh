@@ -9,7 +9,9 @@ hitA() {
     local -a deck=("${!2}")  # copy of deck array
     
     # Deal a card
-    local card="${deck[0]}"
+    #local card="${deck[0]}"
+    #target_hand+=("$card")
+    card=$(deal_card deck)
     target_hand+=("$card")
     
     # Remove card from deck (modify original deck via indirect reference)
