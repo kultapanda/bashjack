@@ -2,40 +2,68 @@
 
 build_decks() {
     # Setup n decks for the game, defaulting to 1 standard 52 card deck.
-    local decks
-    # Check for input
-    if [[ -z $1 ]]; then
-        local num_decks=1
-    else
-        local num_decks=$1
-    fi
-
+    local -a cards=()
+    local suits=("♠" "♥" "♣" "♦")
+    local values=("A" "2" "3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K")
+    
+    # Check for input and validate
+    local num_decks=${1:-1}  # Default to 1 if not specified
+    
     # Check to see if non-num on input
-    if [[ $(echo $1 | grep '[[:alpha:]]' ) ]]; then
+    if [[ ! "$num_decks" =~ ^[0-9]+$ ]]; then
         return 1
     fi
 
-    # iterate num_decks times to the output of this function to pass test
-    for (( i=1; i<=$num_decks; i++ )); do
-        # Note trailing whitespace to make sure multiple sets are properly spaced
-        local decks+="$(seq 1 9) "
+    # Build complete deck(s)
+    for (( d=1; d<=$num_decks; d++ )); do
+        for suit in "${suits[@]}"; do
+            for value in "${values[@]}"; do
+                # Use printf to properly handle special characters and spaces
+                printf "%s\n" "$value$suit"
+            done
+        done
     done
-    echo $decks
 }
 
 randomize_array_with_shuf() {
-  # named ref the incoming array
-  declare -n input_array=$1
-  # snag dem keys
-  local keys=("${!input_array[@]}")
-  # shuffle keys into an array with 'shuf'
-  local randomized_keys=($(printf "%s\n" "${keys[@]}" | shuf))
+    # Take array by reference
+    local -n arr=$1
+    
+    # Create a temporary array with shuffled values
+    local -a shuffled=($(printf "%s\n" "${arr[@]}" | shuf))
+    
+    # Clear and reload the original array
+    arr=("${shuffled[@]}")
+}
 
-  # create new array
-  declare -A shuffled_array
-  # associate the values of the keys from the input_array
-  for key in "${!randomized_keys[@]}"; do
-    shuffled_array["$key"]="${input_array[$key]}"
-  done
-  # TODO: Not yet finished i think
+deal_card() {
+    local -n arr=$1
+    local card="${arr[0]}"
+    arr=("${arr[@]:1}")
+    echo "$card"
+}
+
+calculate_hand_value() {
+    local -a cards=("$@")
+    local total=0
+    local aces=0
+    
+    # Process each card
+    for card in "${cards[@]}"; do
+        value=${card%?}  # Remove suit
+        case $value in
+
+            "A") ((aces++)); ((total+=11));;
+            "K"|"Q"|"J") ((total+=10));;
+            *) ((total+=$value));;
+        esac
+    done
+    
+    # Adjust for aces if needed
+    while (( total > 21 && aces > 0 )); do
+        ((total-=10))
+        ((aces--))
+    done
+    
+    echo "$total"
 }
