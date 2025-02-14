@@ -15,23 +15,30 @@ game_intro() {
 }
 
 initialize_table() {
-    local num_decks=${1:-1}
-    local num_players=${2:-1}
-    local chips_per_player=${3:-100}
+    # Parameters:
+    # 1: num_decks
+    # 2: num_players
+    # 3: chips_per_player
+    local initialize_table_num_decks=${1:-1}
+    local initialize_table_num_players=${2:-1}
+    local initialize_table_chips_per_player=${3:-100}
 
     # Initialize deck
-    readarray -t deck < <(build_decks $num_decks)
-    randomize_array_with_shuf deck
+    readarray -t initialize_table_deck < <(build_decks $initialize_table_num_decks)
+    randomize_array_with_shuf initialize_table_deck
+    echo "Deck initialized"
 
     # Initialize players
-    declare -A players
-    for ((i=0; i<num_players; i++)); do
-        players[$i]=$chips_per_player
+    declare -A initialize_table_players
+    for ((i=0; i<initialize_table_num_players; i++)); do
+        initialize_table_players[$i]=$initialize_table_chips_per_player
+        echo "Player $i: ${initialize_table_players[$i]}"
     done
 
     # Initialize dealer
-    declare -A dealer
-    dealer[chips]=0
+    declare -A initialize_table_dealer
+    initialize_table_dealer[chips]=0
+    echo "Dealer: ${initialize_table_dealer[chips]}"
     
     
     
@@ -58,7 +65,64 @@ bust_check() {
     return 1
 }
 
+
+
 # Game State and actions:
 # Compare scores
 # Payout
 # Game end
+
+deal_initial_cards() {
+    # Parameters:
+    # 1: init_deck
+    # 2: player_hands
+    # 3: dealer_hand
+    local -n deck=$1
+    local -n players=$2
+    local -n dealer=$3
+    
+    # Deal 2 cards to each player
+    for player in "${!players[@]}"; do
+        players[$player]="${deck[0]} ${deck[1]}"
+        deck=("${deck[@]:2}")
+    done
+    
+    # Deal 2 cards to dealer
+    dealer="${deck[0]} ${deck[1]}"
+    deck=("${deck[@]:2}")
+}
+
+#play_round() {
+#    local -n round_deck=$1
+#    local -n player_hands=$2
+#    local -n dealer_hand=$3
+#    
+#    # Deal initial cards
+#    # Player turns
+#    # Dealer turn
+#    # Compare hands
+#    # Handle payouts
+#}
+#
+#compare_hands() {
+#    local player_value=$1
+#    local dealer_value=$2
+#    
+#    # Return: 1=player wins, 0=push, -1=dealer wins
+#}
+#
+#place_bet() {
+#    local -n player_chips=$1
+#    local min_bet=${2:-10}
+#    local max_bet=${3:-100}
+#    
+#    # Handle bet input and validation
+#}
+#
+#handle_payout() {
+#    local result=$1
+#    local bet=$2
+#    local -n chips=$3
+#    
+#    # Calculate and apply winnings/losses
+#}
